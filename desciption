@@ -1,0 +1,182 @@
+API BINGO MONGO
+===============
+
+Description
+-----------
+This is a APIRest for a automatic multiplayer bingo game
+
+Routes
+------
+//#1
+POST /api/v1/singup
+
+#Headers parameters are required
+email
+username
+password
+
+#params error response
+error: true
+status: 400
+message: error_message
+
+#params success response
+error: false
+status: 201
+message: created user
+user: user
+token: token
+
+//#2
+POST /api/v1/singin
+
+#Headers parameters are required
+email
+password
+
+#params error response
+error: true
+status: 401
+message: error_message
+
+#params success response
+error: false
+status: 200
+token: token
+
+//#3
+POST /api/v1/singout
+
+#Headers parameters are required
+token
+
+#params error response
+error: true
+status: 401
+message: error_message
+
+#params success response
+error: false
+status: 200
+message: success
+
+//#4
+GET /api/v1/home
+
+#Headers parameters are required
+token
+
+#params error response
+error: true
+status: 401
+message: error_message
+
+#params success response
+error: false
+status: 200
+matches: matches[]
+tickets: tickets[]
+
+//#5
+GET /api/v1/match
+
+#Headers parameters are required
+token
+
+#params error response
+error: true
+status: 401
+message: error_message
+
+#params success response
+error: false
+status: 200
+match: match
+tickets: tickets[]
+
+//#6
+POST /api/v1/match/newmatch
+
+#Headers parameters are required
+token
+date
+
+#params error response
+error: true
+status: 400
+message: error_message
+
+#params success response
+error: false
+status: 200
+match: match
+
+//#7
+POST /api/v1/match/addticket
+
+#Headers parameters are required
+token
+match
+player
+
+#params error response
+error: true
+status: 401
+message: error_message
+
+#params success response
+error: false
+status: 200
+tciket: ticket
+
+//#8
+POST /api/v1/match/addserie
+
+#Headers parameters are required
+token
+match
+player
+
+#params error response
+error: true
+status: 401
+message: error_message
+
+#params success response
+error: false
+status: 200
+serie: serie
+
+//#9
+POST /api/v1/match/play
+
+#Headers parameters are required
+token
+match
+
+#params error response
+error: true
+status: 401
+message: error_message
+
+#params success response
+error: false
+status: 200
+serie: serie
+
+//#9
+GET /api/v1/match/summary
+
+#Headers parameters are required
+token
+match
+
+#params error response
+error: true
+status: 401
+message: error_message
+
+#params success response
+error: false
+status: 200
+summary: summary
