@@ -8,7 +8,7 @@ This is a APIRest for a automatic multiplayer bingo game
 Routes
 ------
 //#1
-POST /api/v1/singup
+POST /api/v1/signin
 
 #Headers parameters are required
 email
@@ -28,7 +28,7 @@ user: user
 token: token
 
 //#2
-POST /api/v1/singin
+POST /api/v1/login
 
 #Headers parameters are required
 email
@@ -45,7 +45,7 @@ status: 200
 token: token
 
 //#3
-POST /api/v1/singout
+POST /api/v1/logout
 
 #Headers parameters are required
 token

@@ -12,14 +12,17 @@
     "devDependencies": {
         "dotenv": "^8.2.0",
         "jest": "^26.3.0",
+        "jest-mongoose": "^1.1.0",
         "nodemon": "^2.0.4",
         "supertest": "^4.0.2"
     },
     "scripts": {
-        "test": "NODE_ENV=test jest --runInBand"
+        "dev": "nodemon src",
+        "test": "SET NODE_ENV=test && jest --runInBand --forceExit",
+        "test:coverage": "jest --coverage --forceExit"
     },
     "jest": {
-        "testEnviroment": "node"
+        "testEnvironment": "node"
     },
     "keywords": [],
     "author": "",

@@ -1,10 +1,28 @@
 const mongoose = require('mongoose')
 const { dbHost, dbPort, dbName } = require('./envConfig')
 
-if (process.env.NODE_ENV !== 'test') {
-    mongoose.connect(`mongodb://${dbHost}:${dbPort}/${dbName}`, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        })
-        .then(db => console.log('db is connected'))
-}
+
+const connect = () => new Promise((resolve, reject) => {
+
+    mongoose.set('useNewUrlParser', true)
+    mongoose.set('useFindAndModify', false)
+    mongoose.set('useCreateIndex', true)
+    mongoose.set('useUnifiedTopology', true)
+
+    mongoose.connection.on('connected', () => {
+        console.log('Mongodb connected!')
+
+        resolve();
+    });
+
+    try {
+
+        console.log(`Connecting ${dbHost}/${dbName}`)
+        mongoose.connect(`mongodb://${dbHost}:${dbPort}/${dbName}`).then(resolve, reject)
+
+    } catch (e) {
+        reject(e)
+    }
+})
+
+module.exports = { connect }
