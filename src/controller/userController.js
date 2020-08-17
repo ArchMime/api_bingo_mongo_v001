@@ -1,8 +1,18 @@
 const { UserModel } = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 const { secret } = require('../envConfig')
+const bcrypt = require('bcryptjs')
 
 
+/**
+ * create user function: create in db the users of the sistem
+ *
+ * @param   {[string]}  userName  unique in the system
+ * @param   {[string]}  email     unique in the system
+ * @param   {[string]}  password  
+ *
+ * @return  {[object]}            returns an object with the user and token properties
+ */
 async function createUser(userName, email, password) {
 
     const user = new UserModel({
@@ -31,9 +41,33 @@ async function createUser(userName, email, password) {
 
         }
     } catch (e) {
-        console.log(e)
         return { message: "Invalid petition", error: e }
     }
 }
 
-module.exports = { createUser }
+
+/**
+ * get user function
+ *
+ * @param   {string}  email     email dir of user
+ * @param   {string}  password  password of acount
+ *
+ * @return  {object}            returns an object with the user and token properties
+ */
+async function getUser(email, pass) {
+    try {
+        const user = await UserModel.findOne({ email: email }).exec()
+        pass = await bcrypt.compare(pass, user.password)
+
+        if (user && pass) {
+            const token = jwt.sign({ id: user._id }, secret)
+            return { token: token, user: user }
+        } else {
+            return { message: "email or password incorrect" }
+        }
+    } catch (e) {
+        return { message: "Invalid data", error: e }
+    }
+}
+
+module.exports = { createUser, getUser }

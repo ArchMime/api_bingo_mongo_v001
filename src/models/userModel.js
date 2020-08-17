@@ -10,7 +10,7 @@ const UserSchema = new Schema({
 
 UserSchema.methods.encryptPass = async(pass) => {
     const salt = await bcrypt.genSalt(10)
-    return bcrypt.hash(pass, salt)
+    return await bcrypt.hash(pass, salt)
 }
 
 

@@ -18,11 +18,14 @@
     },
     "scripts": {
         "dev": "nodemon src",
-        "test": "SET NODE_ENV=test && jest --runInBand --forceExit",
+        "test": "jest --runInBand --forceExit",
         "test:coverage": "jest --coverage --forceExit"
     },
     "jest": {
-        "testEnvironment": "node"
+        "testEnvironment": "node",
+        "coveragePathIgnorePatterns": [
+            "/node_modules/"
+        ]
     },
     "keywords": [],
     "author": "",
