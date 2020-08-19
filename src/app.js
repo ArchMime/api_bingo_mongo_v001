@@ -6,6 +6,6 @@ const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-app.use(`${apiVersion}/`, userRoutes)
+app.use(`${apiVersion}/users`, userRoutes)
 
 module.exports = app

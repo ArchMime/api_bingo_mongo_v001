@@ -12,14 +12,9 @@ describe(`user controller test createUser`, () => {
     it('should make a new user', async(done) => {
 
         const userTest = await createUser('mimo', 'mimo@mimo.com', 'pas1234')
-        const token = jwt.sign({ id: userTest.user._id }, secret)
-        pass = await bcrypt.compare('pas1234', userTest.user.password)
 
         expect(userTest).not.toBeNull()
-        expect(userTest.token).toEqual(token)
-        expect(pass).toBeTruthy()
-        expect(userTest.user).toMatchObject({ userName: 'mimo', email: 'mimo@mimo.com' })
-
+        expect(userTest).toHaveProperty('token')
 
         done()
     });
@@ -90,13 +85,9 @@ describe('user controller test getUser', () => {
 
         const getUserTest = await getUser('mimo@mimo.com', 'pas1234')
 
-        const token = jwt.sign({ id: userTest.user._id }, secret)
 
         expect(getUserTest).not.toBeNull()
         expect(getUserTest).toHaveProperty('token')
-        expect(getUserTest).toHaveProperty('user')
-        expect(getUserTest.token).toEqual(token)
-        expect(getUserTest.user).toMatchObject({ userName: 'mimo' })
 
         done()
     });
@@ -107,11 +98,8 @@ describe('user controller test getUser', () => {
 
         const getUserTest = await getUser('mimo@mimo.com', 'pas12345')
 
-        const token = jwt.sign({ id: userTest.user._id }, secret)
-
         expect(getUserTest).not.toBeNull()
         expect(getUserTest).not.toHaveProperty('token')
-        expect(getUserTest).not.toHaveProperty('user')
         expect(getUserTest).toMatchObject({ message: "email or password incorrect" })
 
         done()
@@ -123,12 +111,9 @@ describe('user controller test getUser', () => {
 
         const getUserTest = await getUser('mimo2@mimo.com', 'pas12345')
 
-        const token = jwt.sign({ id: userTest.user._id }, secret)
-
         expect(getUserTest).not.toBeNull()
         expect(getUserTest).not.toBeNull()
         expect(getUserTest).not.toHaveProperty('token')
-        expect(getUserTest).not.toHaveProperty('user')
         expect(getUserTest).toMatchObject({ message: "Invalid data" })
 
         done()

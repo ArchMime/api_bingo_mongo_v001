@@ -18,8 +18,8 @@
     },
     "scripts": {
         "dev": "nodemon src",
-        "test": "jest --runInBand --forceExit",
-        "test:coverage": "jest --coverage --forceExit"
+        "test": "jest --runInBand --detectOpenHandles --forceExit",
+        "test:coverage": "jest --coverage --detectOpenHandles --forceExit"
     },
     "jest": {
         "testEnvironment": "node",

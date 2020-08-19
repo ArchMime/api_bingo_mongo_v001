@@ -11,7 +11,7 @@ const bcrypt = require('bcryptjs')
  * @param   {[string]}  email     unique in the system
  * @param   {[string]}  password  
  *
- * @return  {[object]}            returns an object with the user and token properties
+ * @return  {[object]}            returns an object with token properties
  */
 async function createUser(userName, email, password) {
 
@@ -31,9 +31,9 @@ async function createUser(userName, email, password) {
 
             await user.save()
 
-            const token = jwt.sign({ id: user._id }, secret)
+            const token = await jwt.sign({ id: user._id }, secret)
 
-            return { user: user, token: token }
+            return { token: token }
 
         } else {
 
@@ -52,7 +52,7 @@ async function createUser(userName, email, password) {
  * @param   {string}  email     email dir of user
  * @param   {string}  password  password of acount
  *
- * @return  {object}            returns an object with the user and token properties
+ * @return  {object}            returns an object with token properties
  */
 async function getUser(email, pass) {
     try {
@@ -60,8 +60,8 @@ async function getUser(email, pass) {
         pass = await bcrypt.compare(pass, user.password)
 
         if (user && pass) {
-            const token = jwt.sign({ id: user._id }, secret)
-            return { token: token, user: user }
+            const token = await jwt.sign({ id: user._id }, secret)
+            return { token: token }
         } else {
             return { message: "email or password incorrect" }
         }

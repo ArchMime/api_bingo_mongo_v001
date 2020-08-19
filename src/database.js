@@ -10,14 +10,11 @@ const connect = () => new Promise((resolve, reject) => {
     mongoose.set('useUnifiedTopology', true)
 
     mongoose.connection.on('connected', () => {
-        console.log('Mongodb connected!')
-
         resolve();
     });
 
     try {
 
-        console.log(`Connecting ${dbHost}/${dbName}`)
         mongoose.connect(`mongodb://${dbHost}:${dbPort}/${dbName}`).then(resolve, reject)
 
     } catch (e) {
