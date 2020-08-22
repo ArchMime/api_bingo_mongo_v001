@@ -10,7 +10,6 @@ const app = require('../src/app')
 let testServer
 beforeAll(async() => {
     testServer = await app.listen(4000)
-    console.log('conectado')
 })
 
 afterAll((done) => {
@@ -150,7 +149,6 @@ describe('login route test', () => {
         expect(response.status).toBe(200)
         expect(response.body).not.toBeNull()
         expect(response.body).toHaveProperty('token')
-        expect(response.body.token).toEqual(aux.body.token)
 
         done()
     });

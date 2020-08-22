@@ -45,7 +45,6 @@ async function createUser(userName, email, password) {
     }
 }
 
-
 /**
  * get user function
  *
