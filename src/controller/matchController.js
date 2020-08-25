@@ -4,6 +4,15 @@ const { UserModel } = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 const { secret } = require('../envConfig')
 
+/**
+ * createMatch function
+ *
+ * @param   {Date}  date        date the game was played
+ * @param   {String}  descrption  Information relevant to the match
+ * @param   {Token}  token       User validator
+ *
+ * @return  {Object}              the function returns an object composed of a token and a match
+ */
 async function createMatch(date, descrption, token) {
 
     try {
@@ -30,6 +39,14 @@ async function createMatch(date, descrption, token) {
     }
 }
 
+/**
+ * getMatch function
+ *
+ * @param   {id}  matchId  id of the match to play
+ * @param   {token}  token    user validator
+ *
+ * @return  {Object}           the function returns an object composed of a token and a match
+ */
 async function getMatch(matchId, token) {
 
     try {
@@ -47,6 +64,13 @@ async function getMatch(matchId, token) {
     }
 }
 
+/**
+ * myMatches function
+ *
+ * @param   {token}  token  validator user
+ *
+ * @return  {object}         returns a user token and an array with all matches created for the user.
+ */
 async function myMatches(token) {
     try {
         let decode = await jwt.verify(token, secret)
