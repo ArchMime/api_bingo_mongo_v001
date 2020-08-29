@@ -5,6 +5,7 @@ const TicketSchema = new Schema({
     match: { type: String, required: true },
     player: { type: String, required: true },
     numbers: { type: Array },
+    lines: { type: Array },
     serie: { type: String }
 }, { timestamps: true })
 

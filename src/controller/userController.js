@@ -15,10 +15,12 @@ const bcrypt = require('bcryptjs')
  */
 async function createUser(userName, email, password) {
 
+    if (!password) { return { error: "password cannot be undefined" } }
+
     const user = new UserModel({
-        userName,
-        email,
-        password
+        userName: String(userName),
+        email: String(email),
+        password: String(password)
     })
 
     try {
@@ -55,8 +57,8 @@ async function createUser(userName, email, password) {
  */
 async function getUser(email, pass) {
     try {
-        const user = await UserModel.findOne({ email: email }).exec()
-        pass = await bcrypt.compare(pass, user.password)
+        const user = await UserModel.findOne({ email: String(email) }).exec()
+        pass = await bcrypt.compare(String(pass), user.password)
 
         if (user && pass) {
             const token = await jwt.sign({ id: user._id }, secret)

@@ -50,7 +50,7 @@ describe(`user controller test createUser`, () => {
         const userTest = await createUser('mimo', 'mimo@mimo.com')
 
         expect(userTest).not.toBeNull()
-        expect(userTest).toMatchObject({ message: "Invalid petition" })
+        expect(userTest).toMatchObject({ error: "password cannot be undefined" })
 
         done()
     });

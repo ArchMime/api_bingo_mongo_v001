@@ -1,8 +1,7 @@
 const { Router } = require('express')
 const userRouter = Router()
 const { createUser, getUser } = require('../controller/userController')
-const jwt = require('jsonwebtoken')
-const { secret } = require('../envConfig')
+
 
 userRouter.post('/singin', async(req, res) => {
     const { userName, email, password } = req.body

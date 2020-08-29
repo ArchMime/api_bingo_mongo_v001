@@ -20,8 +20,7 @@ async function loadModels(token, idMatch, idPlayer = 0) {
     let match = await MatchModel.findById(idMatch)
     let player
     if (idPlayer != 0) {
-        let decodePlayer = await jwt.verify(idPlayer, secret)
-        player = await UserModel.findById(decodePlayer.id)
+        player = await UserModel.findById(idPlayer)
     } else {
         player = null
     }
@@ -34,13 +33,13 @@ async function loadModels(token, idMatch, idPlayer = 0) {
  *
  * @param   {token}  userToken    user validator
  * @param   {id}  matchId   match validator
- * @param   {token}  playerToken  user validator
+ * @param   {id}  playerId  user validator
  *
  * @return  {object}          returned an object with token of user and tiket
  */
-async function createTicket(userToken, matchId, playerToken) {
+async function createTicket(userToken, matchId, playerId) {
     try {
-        const { user, match, player } = await loadModels(userToken, matchId, playerToken)
+        const { user, match, player } = await loadModels(userToken, matchId, playerId)
 
         if (player && user._id == match.master && !match.played) {
             const ticket = new TicketModel({
@@ -60,10 +59,9 @@ async function createTicket(userToken, matchId, playerToken) {
 
 }
 
-async function createSerie(userToken, matchId, playerToken) {
+async function createSerie(userToken, matchId, playerId) {
     try {
-        const { user, match, player } = await loadModels(userToken, matchId, playerToken)
-
+        const { user, match, player } = await loadModels(userToken, matchId, playerId)
         if (player && user._id == match.master && !match.played) {
             const auxTicket = new TicketModel({
                 match: match._id,
@@ -126,4 +124,17 @@ async function getAllMyTickets(token) {
     }
 }
 
-module.exports = { createTicket, createSerie, getTicketOfMatch, getAllMyTickets }
+async function myTicketsOfMatch(token, matchId) {
+    try {
+        const { user, match } = await loadModels(token, matchId)
+
+        let myTicketsOfMatch = await TicketModel.find({ player: user._id, match: match._id })
+
+        return { token: token, myTicketsOfMatch: myTicketsOfMatch }
+
+    } catch (e) {
+        return { message: "Invalid data", error: e }
+    }
+}
+
+module.exports = { createTicket, createSerie, getTicketOfMatch, getAllMyTickets, myTicketsOfMatch, loadModels }

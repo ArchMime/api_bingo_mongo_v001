@@ -189,7 +189,6 @@ describe('login route test', () => {
         expect(response2.status).toBe(200)
         expect(response2.body).not.toBeNull()
         expect(response2.body).toHaveProperty('token')
-        expect(response2.body.token).toEqual(aux.body.token)
 
         done()
     });

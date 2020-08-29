@@ -1,8 +1,7 @@
 const { Router } = require('express')
 const matchRoutes = Router()
 const { createMatch, getMatch, myMatches } = require('../controller/matchController')
-const jwt = require('jsonwebtoken')
-const { secret } = require('../envConfig')
+
 
 matchRoutes.post('/newmatch', async(req, res) => {
     const { date, description } = req.body

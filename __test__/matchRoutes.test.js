@@ -1,9 +1,7 @@
 require('dotenv').config()
 
 const { models, make, mer, check } = require('./bundle')
-const { secret, apiVersion } = require('../src/envConfig')
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcryptjs')
+const { apiVersion } = require('../src/envConfig')
 const request = require('supertest')
 const app = require('../src/app')
 
