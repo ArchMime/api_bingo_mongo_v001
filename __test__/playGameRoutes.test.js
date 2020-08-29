@@ -5,8 +5,21 @@ const { createTicket, createSerie } = require('../src/controller/ticketControlle
 const { createUser } = require('../src/controller/userController')
 const { createMatch } = require('../src/controller/matchController')
 const runPlayGame = require('../src/controller/playGameController')
+const playGameRoutes = require('../src/routes/playGameRoutes')
 const { secret } = require('../src/envConfig')
 const jwt = require('jsonwebtoken')
+const { apiVersion } = require('../src/envConfig')
+const request = require('supertest')
+const app = require('../src/app')
+
+let testServer
+beforeAll(async() => {
+    testServer = await app.listen(4000)
+})
+
+afterAll((done) => {
+    testServer.close(done)
+})
 
 describe('play game', () => {
     it('play game', async(done) => {
@@ -33,16 +46,16 @@ describe('play game', () => {
             await createSerie(user.token, match.match._id, decode3.id)
         }
 
-        let playedGame = await runPlayGame(user.token, match.match._id)
+        const response = await request(app)
+            .post(`${apiVersion}/matches/playgame`)
+            .send({ match: match.match._id })
+            .set('token', user.token)
 
-        expect(playedGame).not.toBeNull()
-        expect(playedGame).not.toHaveProperty('error')
-        expect(playedGame).not.toHaveProperty('message')
-        expect(playedGame).toHaveProperty('numbersPlayed')
-        expect(playedGame).toHaveProperty('winningTickets')
-        expect(playedGame.winningTickets[0].lines[0]).toBe('xxxxx')
-        expect(playedGame.winningTickets[0].lines[1]).toBe('xxxxx')
-        expect(playedGame.winningTickets[0].lines[2]).toBe('xxxxx')
+        expect(response.status).toBe(201)
+        expect(response.body).not.toBeNull()
+        expect(response.body).toHaveProperty('game')
+        expect(response.body.game).not.toHaveProperty('error')
+
         done()
     });
 

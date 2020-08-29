@@ -6,7 +6,7 @@ const request = require('supertest')
 const app = require('../src/app')
 const { createUser } = require('../src/controller/userController')
 const { createMatch } = require('../src/controller/matchController')
-const demandRoutes = require('../src/routes/demandTicketRoutes')
+
 let testServer
 beforeAll(async() => {
     testServer = await app.listen(4000)

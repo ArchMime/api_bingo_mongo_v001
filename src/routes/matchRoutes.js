@@ -1,6 +1,7 @@
 const { Router } = require('express')
 const matchRoutes = Router()
 const { createMatch, getMatch, myMatches } = require('../controller/matchController')
+const playGameRoutes = require('./playGameRoutes')
 
 
 matchRoutes.post('/newmatch', async(req, res) => {
@@ -49,5 +50,7 @@ matchRoutes.get('/mymatches', async(req, res) => {
         res.status(418).json({ message: 'no cacho', error: e })
     }
 })
+
+matchRoutes.use('/', playGameRoutes)
 
 module.exports = matchRoutes
