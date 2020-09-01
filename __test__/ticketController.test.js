@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const { models, make, mer, check } = require('./bundle')
-const { createTicket, createSerie, getTicketOfMatch, getAllMyTickets, myTicketsOfMatch } = require('../src/controller/ticketController')
+const { createTicket, createSerie, getAllTicketOfMatch, getAllMyTickets, myTicketsOfMatch } = require('../src/controller/ticketController')
 const { secret } = require('../src/envConfig')
 const jwt = require('jsonwebtoken')
 
@@ -65,49 +65,46 @@ describe('test for function select numbers of tickets', () => {
 
 describe('test for create tickect function', () => {
     it('create new ticket', async(done) => {
-        let user = await createUser('mimo', 'mimo@mimo.com', 'pas1234')
-        let player = await createUser('player', 'player@email.com', 'pas123')
+        let user = await createUser('mimo', 'pas1234')
+        let player = await createUser('player', 'pas123')
         let match = await createMatch('', '', user.token)
         let decode = await jwt.verify(player.token, secret)
-        let newTicket = await createTicket(user.token, match.match._id, decode.id)
+        let newTicket = await createTicket(user.token, match._id, decode.id)
         expect(newTicket).not.toBeNull()
-        expect(newTicket).toHaveProperty('token')
-        expect(newTicket).toHaveProperty('ticket')
+        expect(newTicket).toHaveProperty('_id')
         done()
     });
 
     it('try create ticket without player', async(done) => {
-        let user = await createUser('mimo', 'mimo@mimo.com', 'pas1234')
+        let user = await createUser('mimo', 'pas1234')
         let match = await createMatch('', '', user.token)
-        let newTicket = await createTicket(user.token, match.match._id, '')
+        let newTicket = await createTicket(user.token, match._id, '')
         expect(newTicket).not.toBeNull()
         expect(newTicket).toHaveProperty('message')
         done()
     });
 
     it('try create ticket without match', async(done) => {
-        let user = await createUser('mimo', 'mimo@mimo.com', 'pas1234')
+        let user = await createUser('mimo', 'pas1234')
         let match = await createMatch('', '', user.token)
         let newTicket = await createTicket(user.token, '', '')
         expect(newTicket).not.toBeNull()
-        expect(newTicket).toHaveProperty('error')
+        expect(newTicket).toHaveProperty('message')
         done()
     });
 });
 
 describe('test for create serie function', () => {
     it('create new serie', async(done) => {
-        let user = await createUser('mimo', 'mimo@mimo.com', 'pas1234')
-        let player = await createUser('player', 'player@email.com', 'pas123')
+        let user = await createUser('mimo', 'pas1234')
+        let player = await createUser('player', 'pas123')
         let match = await createMatch('', '', user.token)
         let decode = await jwt.verify(player.token, secret)
-        let newSerie = await createSerie(user.token, match.match._id, decode.id)
+        let newSerie = await createSerie(user.token, match._id, decode.id)
 
 
         expect(newSerie).not.toBeNull()
-        expect(newSerie).toHaveProperty('token')
-        expect(newSerie).toHaveProperty('serie')
-        expect(newSerie.serie).toHaveLength(6)
+        expect(newSerie).toHaveLength(6)
         done()
     });
 
@@ -115,48 +112,43 @@ describe('test for create serie function', () => {
 
 describe('test for get ticket of match', () => {
     it('get all tickets of match', async(done) => {
-        let user = await createUser('mimo', 'mimo@mimo.com', 'pas1234')
-        let player = await createUser('player', 'player@email.com', 'pas123')
+        let user = await createUser('mimo', 'pas1234')
+        let player = await createUser('player', 'pas123')
         let match = await createMatch('', '', user.token)
         let decode = await jwt.verify(player.token, secret)
         let newTicket = []
         for (let i = 0; i < 4; i++) {
-            newTicket[i] = await createTicket(user.token, match.match._id, decode.id)
+            newTicket[i] = await createTicket(user.token, match._id, decode.id)
         }
-        let newSerie = await createSerie(user.token, match.match._id, decode.id)
+        let newSerie = await createSerie(user.token, match._id, decode.id)
 
-        let ticketOfMatch = await getTicketOfMatch(user.token, match.match._id)
+        let ticketOfMatch = await getAllTicketOfMatch(user.token, match._id)
 
         expect(ticketOfMatch).not.toBeNull()
-        expect(ticketOfMatch).toHaveProperty('token')
-        expect(ticketOfMatch).toHaveProperty('tickets')
-        expect(ticketOfMatch.tickets).toHaveLength(10)
+        expect(ticketOfMatch).toHaveLength(10)
         done()
     });
 
 });
 
-
 describe('test for get all my tickets', () => {
     it('try to get all my tickets', async(done) => {
-        let user = await createUser('mimo', 'mimo@mimo.com', 'pas1234')
-        let player = await createUser('player', 'player@email.com', 'pas123')
+        let user = await createUser('mimo', 'pas1234')
+        let player = await createUser('player', 'pas123')
         let decode = await jwt.verify(player.token, secret)
         let match = await createMatch('', '', user.token)
         let newTicket = []
         for (let i = 0; i < 4; i++) {
-            newTicket[i] = await createTicket(user.token, match.match._id, decode.id)
+            newTicket[i] = await createTicket(user.token, match._id, decode.id)
         }
-        let newSerie = await createSerie(user.token, match.match._id, decode.id)
+        let newSerie = await createSerie(user.token, match._id, decode.id)
 
         let matchTwo = await createMatch('', '', user.token)
-        let newSerieTwo = await createSerie(user.token, matchTwo.match._id, decode.id)
+        let newSerieTwo = await createSerie(user.token, matchTwo._id, decode.id)
         let allTickets = await getAllMyTickets(player.token)
 
         expect(allTickets).not.toBeNull()
-        expect(allTickets).toHaveProperty('token')
-        expect(allTickets).toHaveProperty('myTickets')
-        expect(allTickets.myTickets).toHaveLength(16)
+        expect(allTickets).toHaveLength(16)
         done()
     });
 
@@ -164,25 +156,23 @@ describe('test for get all my tickets', () => {
 
 describe('test for my tickets of match', () => {
     it('test function', async(done) => {
-        let user = await createUser('mimo', 'mimo@mimo.com', 'pas1234')
-        let player = await createUser('player', 'player@email.com', 'pas123')
+        let user = await createUser('mimo', 'pas1234')
+        let player = await createUser('player', 'pas123')
         let match = await createMatch('', '', user.token)
         let decode = await jwt.verify(player.token, secret)
 
         let newTicket = []
         for (let i = 0; i < 4; i++) {
-            newTicket[i] = await createTicket(user.token, match.match._id, decode.id)
+            newTicket[i] = await createTicket(user.token, match._id, decode.id)
         }
-        let newSerie = await createSerie(user.token, match.match._id, decode.id)
+        let newSerie = await createSerie(user.token, match._id, decode.id)
 
         let matchTwo = await createMatch('', '', user.token)
-        let newSerieTwo = await createSerie(user.token, matchTwo.match._id, decode.id)
-        let allTickets = await myTicketsOfMatch(player.token, match.match._id)
+        let newSerieTwo = await createSerie(user.token, matchTwo._id, decode.id)
+        let allTickets = await myTicketsOfMatch(player.token, match._id)
 
         expect(allTickets).not.toBeNull()
-        expect(allTickets).toHaveProperty('token')
-        expect(allTickets).toHaveProperty('myTicketsOfMatch')
-        expect(allTickets.myTicketsOfMatch).toHaveLength(10)
+        expect(allTickets).toHaveLength(10)
         done()
         done()
     });

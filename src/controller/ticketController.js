@@ -49,16 +49,25 @@ async function createTicket(userToken, matchId, playerId) {
             ticket.numbers = ticket.createNumbers()
             await ticket.save()
 
-            return { token: userToken, ticket: ticket }
+            return ticket
         } else {
-            return { message: 'not found' }
+            throw new Error('unauthorized')
         }
     } catch (e) {
-        return { message: "Invalid data", error: e }
+        return e
     }
 
 }
 
+/**
+ * create serie function
+ *
+ * @param   {token}  userToken  user validator
+ * @param   {id}  matchId    match validator
+ * @param   {id}  playerId   user validator
+ *
+ * @return  {array}             return array whit new tickets
+ */
 async function createSerie(userToken, matchId, playerId) {
     try {
         const { user, match, player } = await loadModels(userToken, matchId, playerId)
@@ -86,55 +95,78 @@ async function createSerie(userToken, matchId, playerId) {
 
                 serie.push(ticket)
             }
-            return { token: userToken, serie: serie }
+            return serie
         } else {
-            return { message: 'not found' }
+            throw new Error('unauthorized')
         }
     } catch (e) {
-        return { message: "Invalid data", error: e }
+        return e
     }
 }
 
-async function getTicketOfMatch(userToken, matchId) {
+/**
+ * get ticket of match function
+ *
+ * @param   {token}  userToken  user validator
+ * @param   {id}  matchId    match validator
+ *
+ * @return  {array}             return array with ticket belonging to the match
+ */
+async function getAllTicketOfMatch(userToken, matchId) {
     try {
         const { user, match } = await loadModels(userToken, matchId)
         if (user._id == match.master) {
             let tickets = await TicketModel.find({ match: match._id })
 
-            return { token: userToken, tickets: tickets }
+            return tickets
         } else {
-            return { message: 'not found' }
+            throw new Error('unauthorized')
         }
 
     } catch (e) {
-        return { message: "Invalid data", error: e }
+        return e
     }
 }
 
+/**
+ * get all my tickets function
+ *
+ * @param   {token}  token  user validator
+ *
+ * @return  {array}         array with all tickets of user
+ */
 async function getAllMyTickets(token) {
     try {
         let decode = await jwt.verify(token, secret)
 
         let myTickets = await TicketModel.find({ player: decode.id })
 
-        return { token: token, myTickets: myTickets }
+        return myTickets
 
     } catch (e) {
-        return { message: "Invalid data", error: e }
+        return e
     }
 }
 
+/**
+ * my tickets of match
+ *
+ * @param   {token}  token    user validator
+ * @param   {id}  matchId  match validator
+ *
+ * @return  {array}           return all tickets of user in the match
+ */
 async function myTicketsOfMatch(token, matchId) {
     try {
         const { user, match } = await loadModels(token, matchId)
 
         let myTicketsOfMatch = await TicketModel.find({ player: user._id, match: match._id })
 
-        return { token: token, myTicketsOfMatch: myTicketsOfMatch }
+        return myTicketsOfMatch
 
     } catch (e) {
-        return { message: "Invalid data", error: e }
+        return e
     }
 }
 
-module.exports = { createTicket, createSerie, getTicketOfMatch, getAllMyTickets, myTicketsOfMatch, loadModels }
+module.exports = { createTicket, createSerie, getAllTicketOfMatch, getAllMyTickets, myTicketsOfMatch, loadModels }

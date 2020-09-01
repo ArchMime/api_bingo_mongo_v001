@@ -4,7 +4,6 @@ const bcrypt = require('bcryptjs')
 
 const UserSchema = new Schema({
     userName: { type: String, required: true },
-    email: { type: String },
     password: { type: String, required: true }
 }, { timestamps: true })
 
@@ -14,23 +13,11 @@ UserSchema.methods.encryptPass = async(pass) => {
 }
 
 
-UserSchema.methods.userValidations = async(userName, email) => {
+UserSchema.methods.userValidations = async(userName) => {
 
     let userCount = await models.users.countDocuments({ userName })
 
-    let emailCount = await models.users.countDocuments({ email })
-
-    let regex = /\S+@\S+\.\S+/;
-
-    if (regex.test(email) && !userCount && !emailCount) {
-
-        return true
-
-    } else {
-
-        return false
-
-    }
+    return !userCount
 
 }
 

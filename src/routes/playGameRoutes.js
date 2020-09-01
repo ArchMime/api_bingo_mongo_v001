@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const playGameRoutes = Router()
-const runPlayGame = require('../controller/playGameController')
+const { runPlayGame } = require('../controller/playGameController')
 
 playGameRoutes.post('/playgame', async(req, res) => {
     const { match } = req.body

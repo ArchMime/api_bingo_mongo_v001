@@ -6,8 +6,18 @@ const { loadModels, createTicket, createSerie } = require('./ticketController')
 const jwt = require('jsonwebtoken')
 const { secret } = require('../envConfig')
 
-
-async function requestTickets(token, matchId, type, quantity, message) {
+/**
+ * demandTicket function
+ *
+ * @param   {token}  token     user validator
+ * @param   {id}  matchId   match validator
+ * @param   {string}  type      request type validator
+ * @param   {number}  quantity  quantity of request, no required
+ * @param   {string}  message   message of request, no required
+ *
+ * @return  {object}            return a object of type demandTicket
+ */
+async function newDemandTickets(token, matchId, type, quantity, message) {
     try {
         const { user, match } = await loadModels(token, matchId)
         if (user && match && !match.played) {
@@ -21,65 +31,88 @@ async function requestTickets(token, matchId, type, quantity, message) {
 
             await demand.save()
 
-            return { ticketRequest: demand }
+            return demand
 
         } else {
-            return { message: 'not found' }
+            throw new Error('not found')
         }
 
     } catch (e) {
-        return { message: "Invalid data", error: e }
+        return e
     }
 }
 
-async function acceptRequest(userToken, requestId, playerId) {
+/**
+ * acceptDemand function
+ *
+ * @param   {token}  userToken  user validator
+ * @param   {id}  demandId  demand validator
+ *
+ * @return  {[type]}             [return description]
+ */
+async function acceptDemand(userToken, demandId) {
 
     try {
-        let objRequest = await DemandTicketModel.findById(requestId)
+        let objRequest = await DemandTicketModel.findById(demandId)
         let match = await MatchModel.findById(objRequest.match)
 
         if (!match.played) {
             let acceptTickets = []
             if (objRequest.type === 'ticket') {
                 for (let i = 0; i < objRequest.quantity; i++) {
-                    let aux = await createTicket(userToken, match._id, playerId)
-                    acceptTickets.push(aux.ticket)
+                    let aux = await createTicket(userToken, match._id, objRequest.player)
+                    acceptTickets.push(aux)
                 }
             } else if (objRequest.type === 'serie') {
                 for (let i = 0; i < objRequest.quantity; i++) {
-                    let aux = await createSerie(userToken, match._id, playerId)
-                    acceptTickets.push(aux.serie)
+                    let aux = await createSerie(userToken, match._id, objRequest.player)
+                    acceptTickets.push(aux)
                 }
             } else {
-                return { message: 'no type defined' }
+                throw new Error('no type defined')
             }
-            await DemandTicketModel.findByIdAndDelete(requestId)
-            return { acceptTickets: acceptTickets }
+            await DemandTicketModel.findByIdAndDelete(demandId)
+            return acceptTickets
 
         } else {
-            return { message: 'not found' }
+            throw new Error('not found')
         }
     } catch (e) {
-        return { message: "Invalid data", error: e }
+        return e
     }
 }
 
-async function rejectDemand(token, requestId) {
+/**
+ * rejectDemand function
+ *
+ * @param   {token}  token      user validator
+ * @param   {id}  demandId  demand validator
+ *
+ * @return  {string}             return confirm delete value
+ */
+async function rejectDemand(token, demandId) {
     try {
         let decode = await jwt.verify(token, secret)
         let user = await UserModel.findById(decode.id)
-        let demand = await DemandTicketModel.findById(requestId)
+        let demand = await DemandTicketModel.findById(demandId)
         let auxMatch = await MatchModel.findById(demand.match)
         if (user._id == auxMatch.master) {
-            await DemandTicketModel.findByIdAndDelete(requestId)
-            return { message: 'removed' }
+            await DemandTicketModel.findByIdAndDelete(demandId)
+            return 'removed'
         }
     } catch (e) {
-        return { message: "Invalid data", error: e }
+        return e
     }
 }
 
-async function requestOfMyMatches(token) {
+/**
+ * demandOfMiMatches
+ *
+ * @param   {token}  token  user validator
+ *
+ * @return  {array}         returns all demands for matches where user is master
+ */
+async function demandOfMyMatches(token) {
     try {
         let decodeUser = await jwt.verify(token, secret)
         let user = await UserModel.findById(decodeUser.id)
@@ -90,11 +123,11 @@ async function requestOfMyMatches(token) {
             let aux = await DemandTicketModel.find({ match: myMatches[i]._id })
             demands.push(aux)
         }
-        return { demands: demands }
+        return demands
     } catch (e) {
-        return { message: "Invalid data", error: e }
+        return e
 
     }
 }
 
-module.exports = { requestTickets, acceptRequest, rejectDemand, requestOfMyMatches }
+module.exports = { newDemandTickets, acceptDemand, rejectDemand, demandOfMyMatches }

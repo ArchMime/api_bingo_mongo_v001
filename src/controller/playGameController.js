@@ -3,11 +3,20 @@ const { MatchModel } = require('../models/matchModel')
 const { UserModel } = require('../models/userModel')
 const { TicketModel } = require('../models/ticketModel')
 const { PlayGameModel } = require('../models/playGameModel')
+const { matchesThatIPlay } = require('./matchController')
 
 
 const jwt = require('jsonwebtoken')
 const { secret } = require('../envConfig')
 
+/**
+ * runPlayGame function
+ *
+ * @param   {toke}  token    user validator
+ * @param   {id}  matchId  match validator
+ *
+ * @return  {playGameObject}           return a object with data of game
+ */
 async function runPlayGame(token, matchId) {
     try {
         const decode = await jwt.verify(token, secret)
@@ -66,8 +75,7 @@ async function runPlayGame(token, matchId) {
 
                         //evaluates if a line was completed
                         if ((!playGame.winningLines[0] || playGame.roundsForLine == roundIndex + 1) && ticketsMatch[i].lines[iAux] === 'xxxxx') {
-                            // console.log('entra al win line,vuelta: ' + (roundIndex + 1))
-                            // console.log(ticketsMatch[i])
+
                             playGame.winningLines.push(ticketsMatch[i])
                             playGame.roundsForLine = roundIndex + 1 //I don't understand why it doesn't work ++roundIndex
                             playGame.numberOfWinningLines = Number(playGame.numberOfWinningLines) + Number(1)
@@ -75,8 +83,6 @@ async function runPlayGame(token, matchId) {
 
                         //evaluates if a ticket was completed
                         if (ticketsMatch[i].lines[0] == 'xxxxx' && ticketsMatch[i].lines[1] == 'xxxxx' && ticketsMatch[i].lines[2] == 'xxxxx') {
-                            // console.log('entra al win game, vuelta: ' + (roundIndex + 1))
-                            // console.log(ticketsMatch[i])
                             playGame.winningTickets.push(ticketsMatch[i])
                             playGame.numberOfWinningTickets = Number(playGame.numberOfWinningTickets) + Number(1)
                             over = true
@@ -96,8 +102,6 @@ async function runPlayGame(token, matchId) {
 
         playGame.numbersPlayed = playedNumbers
 
-        // console.log(playGame)
-
         await playGame.save()
 
         match.played = true
@@ -112,4 +116,60 @@ async function runPlayGame(token, matchId) {
 
 }
 
-module.exports = runPlayGame
+
+/**
+ * myVictory fuction
+ *
+ * @param   {token}  token  user validator
+ *
+ * @return  {array}         return a array with winer ticket of the user
+ */
+async function myVictory(token) {
+    try {
+        const decode = await jwt.verify(token, secret)
+
+        let matches = await matchesThatIPlay(token)
+
+        let gamesOver = []
+
+        for (let i = 0; i < matches.length; i++) {
+            let games = await PlayGameModel.findOne({ match: matches[i]._id });
+            if (games) {
+                gamesOver.push(games)
+            }
+        }
+
+
+        let myLinesWin = []
+        let myMatchesWin = []
+
+        for (let a = 0; a < gamesOver.length; a++) {
+
+            for (let b = 0; b < gamesOver[a].winningLines.length; b++) {
+
+                if (gamesOver[a].winningLines[b].player == decode.id) {
+                    myLinesWin.push(gamesOver[a].winningLines[b])
+                }
+            }
+
+            for (let c = 0; c < gamesOver[a].winningTickets.length; c++) {
+
+                if (gamesOver[a].winningTickets[c].player == decode.id) {
+                    myMatchesWin.push(gamesOver[a].winningTickets[c])
+                }
+            }
+        }
+
+        let myWins = {
+            linesWin: myLinesWin,
+            matchesWin: myMatchesWin
+        }
+
+        return myWins
+
+    } catch (e) {
+        return e
+    }
+}
+
+module.exports = { runPlayGame, myVictory }

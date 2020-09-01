@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/models/userModel.js</title>
+    <title>Code coverage report for src/routes/homeRoutes.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/models</a> userModel.js</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/routes</a> homeRoutes.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">93.75% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>11/11</span>
+                <span class='fraction'>15/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
-                <span class="quiet">Functions</span>
                 <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>1/1</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">93.75% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>11/11</span>
+                <span class='fraction'>15/16</span>
             </div>
         
             
@@ -81,58 +81,55 @@
 <a name='L22'></a><a href='#L22'>22</a>
 <a name='L23'></a><a href='#L23'>23</a>
 <a name='L24'></a><a href='#L24'>24</a>
-<a name='L25'></a><a href='#L25'>25</a>
-<a name='L26'></a><a href='#L26'>26</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
+<a name='L25'></a><a href='#L25'>25</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">78x</span>
-<span class="cline-any cline-yes">78x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">81x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">81x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span></td><td class="text"><pre class="prettyprint lang-js">const { Schema, model, models } = require('mongoose')
-const bcrypt = require('bcryptjs')
+<span class="cline-any cline-yes">5x</span></td><td class="text"><pre class="prettyprint lang-js">const { Router } = require('express')
+const homeRoutes = Router()
+const { myMatches, matchesThatIPlay, getAllMatches } = require('../controller/matchController')
+const { getAllMyTickets } = require('../controller/ticketController')
+const { demandOfMyMatches } = require('../controller/demandTicketController')
+&nbsp;
+homeRoutes.get('/', async(req, res) =&gt; {
+    const token = req.body.token || req.headers['token']
+    try {
+&nbsp;
+        let mMatches = await myMatches(token)
+        let allMatches = await getAllMatches(token)
+        let allTickets = await getAllMyTickets(token)
+        let myDemands = await demandOfMyMatches(token)
+        let gamesThatIPlay = await matchesThatIPlay(token)
+&nbsp;
+        res.status(200).json({ allMatches, mMatches, allTickets, myDemands, gamesThatIPlay })
+    } catch (e) {
+<span class="cstat-no" title="statement not covered" >        res.status(400).json(e)</span>
+    }
+&nbsp;
+})
 &nbsp;
 &nbsp;
-const UserSchema = new Schema({
-    userName: { type: String, required: true },
-    password: { type: String, required: true }
-}, { timestamps: true })
-&nbsp;
-UserSchema.methods.encryptPass = async(pass) =&gt; {
-    const salt = await bcrypt.genSalt(10)
-    return await bcrypt.hash(pass, salt)
-}
-&nbsp;
-&nbsp;
-UserSchema.methods.userValidations = async(userName) =&gt; {
-&nbsp;
-    let userCount = await models.users.countDocuments({ userName })
-&nbsp;
-    return !userCount
-&nbsp;
-}
-&nbsp;
-const UserModel = model('users', UserSchema)
-&nbsp;
-module.exports = { UserModel, UserSchema }</pre></td></tr></table></pre>
+module.exports = homeRoutes</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
